@@ -43,7 +43,7 @@ It is modular, scalable, and built to be deployable as:
 ---
 
 ## 🔄 Dataflow Diagram  
-![Dataflow](images/data_flow.png)
+![Dataflow](images/data_flow[1].png)
 
 ---
 
