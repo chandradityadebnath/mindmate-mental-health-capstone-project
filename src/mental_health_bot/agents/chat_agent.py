@@ -2,8 +2,8 @@
 Chat Agent - Generates AI-style supportive responses
 """
 
-import random
 from typing import List
+import random
 
 class ChatAgent:
     """Generative-style supportive response"""
