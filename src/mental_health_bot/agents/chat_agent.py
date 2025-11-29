@@ -1,13 +1,18 @@
+"""
+Chat Agent - Generates AI-style supportive responses
+"""
+
 import random
+from typing import List
 
 class ChatAgent:
-    """AI-style supportive response generator"""
+    """Generative-style supportive response"""
 
-    def generate(self, message, emotions, crisis_level):
+    def generate(self, message: str, emotions: List[str], crisis_level: str) -> str:
         if crisis_level == "high":
             return (
-                "🚨 I’m really worried about your safety. "
-                "Please reach out to a trusted person or emergency helpline immediately. "
+                "🚨 I’m deeply concerned about your safety. "
+                "Please reach out to someone you trust or a crisis hotline immediately. "
                 "You are not alone."
             )
 
