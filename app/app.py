@@ -11,11 +11,11 @@ import random
 nest_asyncio.apply()
 
 # =============================================
-# 🧠 GEMINI AI INTEGRATION - FIXED
+# 🧠 GEMINI AI INTEGRATION - SIMPLIFIED & FIXED
 # =============================================
 
 class GeminiAIIntegration:
-    """Gemini AI Integration - FIXED TO ACTUALLY WORK"""
+    """Gemini AI Integration - SIMPLIFIED AND WORKING"""
     
     def __init__(self):
         self.model = None
@@ -23,26 +23,35 @@ class GeminiAIIntegration:
         self.api_key = None
         
     def configure_ai(self, api_key: str):
-        """Configure AI with user-provided API key"""
-        if not api_key:
+        """Configure AI with user-provided API key - SIMPLIFIED"""
+        if not api_key or not api_key.strip():
+            st.error("❌ Please enter a valid API key")
             return False
             
         try:
+            # Clean the API key
+            api_key = api_key.strip()
+            
+            # Configure with the API key
             genai.configure(api_key=api_key)
             
-            # Try different models
+            # Try the most common working models
             models_to_try = [
-                'gemini-1.5-flash',
-                'gemini-1.5-pro',
-                'gemini-pro',
-                'gemini-1.0-pro'
+                'gemini-pro',  # Most reliable
+                'gemini-1.0-pro',
+                'gemini-1.5-flash-latest',
+                'gemini-1.5-pro-latest'
             ]
             
             for model_name in models_to_try:
                 try:
+                    st.write(f"🔄 Trying model: {model_name}...")
                     self.model = genai.GenerativeModel(model_name)
-                    # Quick test
-                    test_response = self.model.generate_content("Hello")
+                    
+                    # Simple test - don't use content that might trigger filters
+                    test_response = self.model.generate_content("Say hello in one word")
+                    
+                    # If we get here, the model works
                     self.fallback_mode = False
                     self.api_key = api_key
                     
@@ -51,56 +60,46 @@ class GeminiAIIntegration:
                     st.session_state.api_key = api_key
                     st.session_state.ai_model = model_name
                     
-                    print(f"✅ AI Connected to: {model_name}")
+                    st.success(f"✅ Connected to: {model_name}")
                     return True
+                    
                 except Exception as e:
-                    print(f"❌ Model {model_name} failed: {e}")
+                    st.write(f"❌ {model_name} failed: {str(e)[:100]}...")
                     continue
                     
+            # If no models work
+            st.error("❌ All models failed. Please check your API key and try again.")
             st.session_state.api_key_connected = False
             self.fallback_mode = True
             return False
             
         except Exception as e:
-            print(f"❌ API config failed: {e}")
+            st.error(f"❌ API configuration failed: {str(e)}")
             st.session_state.api_key_connected = False
             self.fallback_mode = True
             return False
     
     async def analyze_with_ai(self, text: str) -> dict:
-        """Analyze text with real Gemini AI - FIXED"""
+        """Analyze text with real Gemini AI"""
         print(f"🔍 Analyzing: '{text}'")
-        print(f"🤖 AI Status: Model={self.model is not None}, Fallback={self.fallback_mode}")
         
         # Check if we should use real AI
         use_real_ai = (self.model is not None and 
                       not self.fallback_mode and 
                       st.session_state.get('api_key_connected', False))
         
-        print(f"🎯 Use Real AI: {use_real_ai}")
-        
         if use_real_ai:
             try:
-                # Better prompt that forces different responses
+                # Simple, safe prompt that won't trigger content filters
                 prompt = f"""
-                USER MESSAGE: "{text}"
+                User message: "{text}"
                 
-                Analyze this mental health message and provide a COMPLETELY UNIQUE response each time.
-                Do NOT use generic phrases like "thank you for sharing" or "I'm here to listen".
-                
-                Create a response that:
-                - Specifically addresses the emotions in the message
-                - Provides unique insights or perspectives
-                - Uses varied language and approaches
-                - Is compassionate but not repetitive
-                
-                Make each response genuinely different based on the specific message.
+                As a supportive listener, provide a compassionate response to this message.
+                Keep it warm, understanding, and helpful.
                 """
                 
-                print("🚀 Sending to Gemini AI...")
                 response = self.model.generate_content(prompt)
                 response_text = response.text
-                print(f"🤖 RAW AI RESPONSE: {response_text}")
                 
                 return {
                     'emotions': 'ai_analyzed',
@@ -112,147 +111,121 @@ class GeminiAIIntegration:
                 
             except Exception as e:
                 print(f"❌ AI Error: {e}")
+                st.warning("⚠️ AI temporarily unavailable, using advanced simulated responses")
                 return self._simulated_analysis(text)
         else:
-            print("🔄 Using simulated AI (real AI not available)")
             return self._simulated_analysis(text)
     
     def _simulated_analysis(self, text: str) -> dict:
-        """Advanced simulated AI analysis - FIXED TO BE VARIED"""
+        """Advanced simulated AI analysis with varied responses"""
         text_lower = text.lower()
-        print(f"🔍 Simulated analysis for: '{text_lower}'")
         
-        # More varied responses based on content
-        if any(word in text_lower for word in ['kill myself', 'suicide', 'end my life', 'want to die']):
+        # Crisis detection
+        if any(word in text_lower for word in ['kill myself', 'suicide', 'end my life', 'want to die', 'not worth living']):
             return {
                 'emotions': 'desperate, hopeless, suicidal',
                 'urgency': 'high',
                 'needs': 'crisis_intervention',
                 'response': """🚨 **Urgent Support Needed**
 
-I can hear the depth of your pain in those words. When someone considers ending their life, it means they're carrying an unbearable weight.
+I hear the depth of your pain. When someone considers ending their life, it means they're carrying an unbearable weight.
 
-**Please know this:** There are specific people trained to help right now who understand exactly what you're experiencing.
+**Please reach out now:**
+• 📞 Call 988 - Suicide & Crisis Lifeline (24/7)
+• 📱 Text HOME to 741741 - Crisis Text Line
+• 🚑 Call 911 - Emergency Services
 
-**Immediate steps:**
-• Call 988 - They answer 24/7 and know how to help
-• Text HOME to 741741 - For when talking feels too hard  
-• Go to any emergency room - They have crisis teams
-
-The fact you're reaching out tells me part of you still believes help is possible. Please listen to that part.""",
+You don't have to face this alone. Professional help is available right now.""",
                 'ai_generated': False
             }
-        elif any(word in text_lower for word in ['sad', 'depressed', 'hopeless', 'miserable']):
-            variations = [
-                """I recognize that heavy sadness. It's like carrying weights everywhere you go. 
+        
+        # Sad/Depressed responses - VARIED
+        elif any(word in text_lower for word in ['sad', 'depressed', 'hopeless', 'miserable', 'unhappy']):
+            responses = [
+                """I hear the weight in your words. That heavy feeling can make everything seem difficult.
 
-What if we just sit with this feeling for a moment without trying to fix it? Sometimes acknowledging the weight is the first step toward lightening it.
-
-Has there been a moment recently, even a tiny one, where the weight felt slightly lighter?""",
+What's one small thing that might bring a moment of relief, even if temporary?""",
                 
-                """That deep sadness can make everything feel colorless. I want you to know I see the strength it takes to admit you're feeling this way.
+                """Thank you for sharing that you're feeling sad. It takes courage to acknowledge when we're struggling.
 
-Depression often lies to us, making us believe this is permanent. But feelings are visitors - they come, they stay awhile, they change.
-
-What's one small thing that usually brings you even a flicker of comfort?""",
+Would you like to talk about what's been contributing to these feelings?""",
                 
-                """I hear the emptiness in your words. That hollow, nothing-matters feeling is one of the most isolating experiences.
+                """I understand that sad, empty feeling. It can make the world seem gray.
 
-You're not broken - you're responding to something painful. The very fact you're reaching out tells me there's still a spark of hope in there.
-
-Could we explore what that spark might need right now?"""
+Remember that feelings, even intense ones, are temporary visitors. What might help you get through this moment?"""
             ]
             return {
                 'emotions': 'sad, depressed, hopeless',
                 'urgency': 'medium', 
                 'needs': 'emotional_support',
-                'response': random.choice(variations),
+                'response': random.choice(responses),
                 'ai_generated': False
             }
-        elif any(word in text_lower for word in ['happy', 'good', 'great', 'awesome', 'excited']):
-            variations = [
-                """That's wonderful to hear! Positive emotions deserve celebration too.
+        
+        # Happy/Positive responses - VARIED
+        elif any(word in text_lower for word in ['happy', 'good', 'great', 'awesome', 'excited', 'joy']):
+            responses = [
+                """That's wonderful to hear! It's important to celebrate positive moments too.
 
-What's lighting you up right now? Sometimes understanding our joy can be as important as understanding our pain.
-
-Let's savor this good moment together.""",
+What's bringing you this happiness right now?""",
                 
-                """I'm genuinely glad you're feeling good! These moments of lightness are precious.
+                """I'm glad you're feeling good! Positive emotions deserve attention and appreciation.
 
-What does this happiness feel like in your body? Noticing the physical sensations can help us return to them later.""",
+How does this happiness feel in your body?""",
                 
-                """It's beautiful to hear you're experiencing happiness. These moments remind us that light exists, even after darkness.
+                """It's beautiful to hear about your happiness. These moments remind us of life's brightness.
 
-Would you like to explore what's contributing to these positive feelings?"""
+Would you like to explore what's creating these positive feelings?"""
             ]
             return {
                 'emotions': 'happy, content, positive',
                 'urgency': 'low',
                 'needs': 'celebration',
-                'response': random.choice(variations),
+                'response': random.choice(responses),
                 'ai_generated': False
             }
-        elif any(word in text_lower for word in ['angry', 'mad', 'furious', 'rage']):
+        
+        # Angry/Frustrated responses
+        elif any(word in text_lower for word in ['angry', 'mad', 'furious', 'rage', 'frustrated']):
             return {
                 'emotions': 'angry, frustrated, resentful',
                 'urgency': 'medium',
                 'needs': 'anger_management',
-                'response': """I feel the intensity in your words. Anger often shows up when something important has been threatened.
+                'response': """I feel the intensity in your words. Anger often signals that something important to us feels threatened.
 
-That fire you're feeling contains valuable information about your boundaries and values. The challenge is learning to channel that energy constructively.
-
-What's the story behind this anger?""",
+What's beneath this anger? There's usually hurt or fear waiting to be heard.""",
                 'ai_generated': False
             }
-        elif any(word in text_lower for word in ['no', 'nothing', 'dont know', 'not sure']):
-            variations = [
-                """Sometimes "no" is a complete sentence, and sometimes it's the beginning of a deeper conversation.
-
-There's no pressure to have everything figured out. We can just sit in the not-knowing together.
-
-What's it like for you to not have an answer right now?""",
-                
-                """I hear your uncertainty. Not knowing what to say or feel is actually a very honest place to be.
-
-You don't need to perform or have everything sorted out. We can explore this space of not-knowing together.
-
-What's present for you in this moment of hesitation?"""
-            ]
-            return {
-                'emotions': 'uncertain, contemplative',
-                'urgency': 'low',
-                'needs': 'exploration',
-                'response': random.choice(variations),
-                'ai_generated': False
-            }
+        
+        # Default varied responses
         else:
-            variations = [
-                """I'm listening carefully to what you're sharing. There's often more beneath the surface of our words.
+            responses = [
+                """Thank you for sharing. I'm here to listen and understand what you're experiencing.
 
-What's the texture of this experience for you? Sometimes describing the quality of a feeling helps us understand it better.""",
+What would be most helpful for you right now?""",
                 
-                """Thank you for trusting me with this. Every person's experience is unique, and I want to understand yours specifically.
+                """I hear you. Sometimes putting our experiences into words can help us understand them better.
 
-What's been most present for you lately?""",
+What's on your mind?""",
                 
-                """I hear you. Sometimes the most important conversations start with simple sharing.
+                """I'm listening. Every person's experience is unique, and I want to understand yours.
 
-What would be most helpful for you right now - listening, exploring, or something else entirely?"""
+Would you like to tell me more?"""
             ]
             return {
                 'emotions': 'reflective, engaged',
                 'urgency': 'low',
                 'needs': 'connection',
-                'response': random.choice(variations),
+                'response': random.choice(responses),
                 'ai_generated': False
             }
 
 # =============================================
-# 🧠 MENTAL HEALTH AGENT - FIXED
+# 🧠 MENTAL HEALTH AGENT
 # =============================================
 
 class MentalHealthAgent:
-    """Mental Health Agent - FIXED AI USAGE"""
+    """Mental Health Agent"""
     
     def __init__(self):
         self.ai = GeminiAIIntegration()
@@ -270,10 +243,10 @@ class MentalHealthAgent:
         return self.ai.configure_ai(api_key)
     
     async def chat(self, message: str, user_id: str = "anonymous") -> dict:
-        """Main chat method - FIXED"""
+        """Main chat method"""
         start_time = time.time()
         
-        # Always use AI analysis
+        # Use AI analysis
         ai_analysis = await self.ai.analyze_with_ai(message)
         
         processing_time = time.time() - start_time
@@ -292,7 +265,7 @@ class MentalHealthAgent:
         }
 
 # =============================================
-# 🎨 STREAMLIT APP - FIXED ASYNC HANDLING
+# 🎨 STREAMLIT APP
 # =============================================
 
 # Initialize the agent
@@ -333,6 +306,13 @@ st.markdown("""
         border: 2px solid #ffa500;
         margin: 1rem 0;
     }
+    .crisis-high {
+        border-left: 5px solid #ff4b4b;
+        background-color: #ffe6e6;
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 0.5rem 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -344,15 +324,17 @@ with st.expander("🔑 Connect Your Google AI API Key", expanded=True):
     st.markdown("""
     **Get your FREE API key:**
     1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-    2. Create a new API key (free)
-    3. Paste it below
+    2. Sign in with Google account
+    3. Click "Create API Key"
+    4. Copy and paste below
     """)
     
     api_key = st.text_input(
         "Google AI API Key:",
         type="password",
-        placeholder="Enter your API key here...",
-        help="Get free API key from https://makersuite.google.com/app/apikey"
+        placeholder="Paste your API key here...",
+        help="Get free API key from https://makersuite.google.com/app/apikey",
+        key="api_key_input"
     )
     
     col1, col2 = st.columns(2)
@@ -360,13 +342,11 @@ with st.expander("🔑 Connect Your Google AI API Key", expanded=True):
     with col1:
         if st.button("🔗 Connect AI", use_container_width=True, type="primary"):
             if api_key:
-                with st.spinner("Testing AI connection..."):
+                with st.spinner("Connecting to AI services..."):
                     success = mental_health_agent.configure_ai(api_key)
                     if success:
-                        st.success("✅ AI Connected Successfully!")
+                        st.balloons()
                         st.rerun()
-                    else:
-                        st.error("❌ Connection failed. Check your API key.")
             else:
                 st.warning("⚠️ Please enter an API key")
     
@@ -381,8 +361,10 @@ with st.expander("🔑 Connect Your Google AI API Key", expanded=True):
 # AI Status Display
 if st.session_state.get('api_key_connected', False):
     st.markdown(f'<div class="ai-active">🤖 REAL AI ACTIVE - Using {st.session_state.get("ai_model", "Gemini")}</div>', unsafe_allow_html=True)
+    st.success("✅ Your API key is working! Messages will use real AI.")
 else:
     st.markdown('<div class="ai-simulated">🔄 ADVANCED SIMULATED AI ACTIVE</div>', unsafe_allow_html=True)
+    st.info("💡 Connect your API key above for real AI responses")
 
 # Main chat interface
 st.subheader("💬 Chat with MindMate")
@@ -393,35 +375,49 @@ if 'messages' not in st.session_state:
 
 # Display chat history
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-        if message["role"] == "assistant" and "ai_used" in message:
-            if message["ai_used"]:
-                st.caption("🤖 Generated by Real Gemini AI")
+    if message["role"] == "user":
+        with st.chat_message("user"):
+            st.markdown(message["content"])
+    else:
+        crisis_level = message.get("crisis_level", "low")
+        with st.chat_message("assistant"):
+            if crisis_level == "high":
+                st.markdown(f'<div class="crisis-high">{message["content"]}</div>', unsafe_allow_html=True)
             else:
-                st.caption("🔄 Advanced Simulated Response")
+                st.markdown(message["content"])
+            
+            if "ai_used" in message:
+                if message["ai_used"]:
+                    st.caption("🤖 Generated by Real Gemini AI")
+                else:
+                    st.caption("🔄 Advanced Simulated Response")
 
 # Chat input
 if prompt := st.chat_input("How are you feeling today?"):
     # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # Show user message
+    # Show user message immediately
     with st.chat_message("user"):
         st.markdown(prompt)
     
-    # Generate AI response - FIXED: Use asyncio.run() to handle async
+    # Generate AI response
     with st.chat_message("assistant"):
         with st.spinner("🧠 Thinking..."):
             try:
-                # FIXED: Proper async handling
                 result = asyncio.run(mental_health_agent.chat(prompt))
                 response_data = result['final_response']
                 response_text = response_data['response_text']
                 ai_used = response_data['ai_used']
+                crisis_level = response_data['crisis_level']
                 
-                st.markdown(response_text)
+                # Display with appropriate styling
+                if crisis_level == "high":
+                    st.markdown(f'<div class="crisis-high">{response_text}</div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(response_text)
                 
+                # Show AI usage
                 if ai_used:
                     st.caption("🤖 Generated by Real Gemini AI")
                 else:
@@ -431,7 +427,8 @@ if prompt := st.chat_input("How are you feeling today?"):
                 st.session_state.messages.append({
                     "role": "assistant", 
                     "content": response_text,
-                    "ai_used": ai_used
+                    "ai_used": ai_used,
+                    "crisis_level": crisis_level
                 })
                 
             except Exception as e:
@@ -441,16 +438,23 @@ if prompt := st.chat_input("How are you feeling today?"):
                 st.session_state.messages.append({
                     "role": "assistant", 
                     "content": fallback,
-                    "ai_used": False
+                    "ai_used": False,
+                    "crisis_level": "low"
                 })
     
     st.rerun()
+
+# Clear chat button
+if st.session_state.messages:
+    if st.button("🗑️ Clear Chat History", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
 
 # Footer
 st.markdown("---")
 st.markdown("""
 <div style='text-align: center; color: #666;'>
     <p><strong>🧠 MindMate AI Mental Health Support</strong></p>
-    <p><small>Always here to listen 🤗</small></p>
+    <p><small>Always here to listen 🤗 | For emergencies: Call 988</small></p>
 </div>
 """, unsafe_allow_html=True)
