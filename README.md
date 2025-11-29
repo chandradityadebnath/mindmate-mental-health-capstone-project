@@ -3,6 +3,20 @@
 
 A creative, smart, and extensible system designed to offer personalized mental‑health assistance using modern AI techniques.
 
+## 🚀 Live Demo
+
+Experience the live Mental Health Agent System:
+
+🔗 **Live Streamlit App:** [https://mindmate-mental-health-capstone-project-mqyasujqfqzkq9p9wgmnwd.streamlit.app/](https://mindmate-mental-health-capstone-project-mqyasujqfqzkq9p9wgmnwd.streamlit.app/)
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mindmate-mental-health-capstone-project-mqyasujqfqzkq9p9wgmnwd.streamlit.app/)
+
+### 🎯 Try It Now!
+- **Real-time AI-powered mental health support**
+- **Multi-agent system with 4 specialized agents**
+- **Crisis detection and emergency protocols**
+- **Emotional analysis and personalized responses**
+
 ---
 
 ## 🧠 Problem Statement  
