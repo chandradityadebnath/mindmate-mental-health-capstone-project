@@ -1,81 +1,45 @@
 import random
 
 class ChatAgent:
-    """
-    A supportive AI agent that generates emotionally aware responses
-    using emotion + crisis detection + generative patterns.
-    """
+    """AI-style supportive response generator"""
 
-    def __init__(self):
-        # fallback supportive phrases
-        self.supportive_responses = {
+    def generate(self, message, emotions, crisis_level):
+        if crisis_level == "high":
+            return (
+                "🚨 I’m really worried about your safety. "
+                "Please reach out to a trusted person or emergency helpline immediately. "
+                "You are not alone."
+            )
+
+        emotion = emotions[0] if emotions else "neutral"
+
+        templates = {
             "sad": [
-                "I’m really sorry you're feeling this way. I'm here for you.",
-                "It’s okay to feel sad. You’re not alone.",
-                "Your feelings are valid. Do you want to talk more about it?"
+                "I'm really sorry you're feeling this way. I'm here with you.",
+                "It’s okay to feel sad sometimes. You’re not alone.",
             ],
             "anxious": [
-                "It sounds like you’re feeling overwhelmed. Take a deep breath—I'm with you.",
-                "Anxiety can be tough, but talking about it helps.",
-                "You’re doing your best, and that’s enough. Let’s work through this together."
+                "It's understandable to feel overwhelmed. Take a deep breath—I'm here.",
+                "Anxiety can be tough, but we’ll get through it together.",
             ],
             "angry": [
-                "It’s okay to feel angry. Something must have really affected you.",
-                "If you want, you can tell me what triggered your anger.",
-                "Anger often hides deeper hurt. I’m listening."
-            ],
-            "neutral": [
-                "I'm glad you're sharing this with me.",
-                "Thanks for opening up. Tell me more.",
-                "I’m here to support you however I can."
+                "It sounds like something really upset you. I'm listening.",
+                "Your anger is valid — want to talk about what triggered it?",
             ],
             "happy": [
-                "That's amazing! I'm genuinely happy for you!",
-                "Love hearing positive things from you. Keep it going!",
-                "Great! Want to tell me more about it?"
+                "That's wonderful to hear! Tell me more!",
+                "Your positivity really shows — keep it going!",
+            ],
+            "neutral": [
+                "I'm here to listen to anything you’d like to share.",
+                "Tell me more about how you're doing.",
             ]
         }
 
-    def generate_ai_style_response(self, message, emotion):
-        """
-        GENERATIVE-LIKE AI RESPONSE (offline)
-        This simulates intelligent conversation WITHOUT using an external API.
-        """        
-        base = {
-            "sad": "It sounds like you’re really hurt right now. That must be heavy on your heart.",
-            "anxious": "Your mind seems really active, maybe overloaded. That can be exhausting.",
-            "angry": "Your frustration is loud, and it means something important happened.",
-            "neutral": "I hear you. Thanks for expressing yourself.",
-            "happy": "Your positive energy really comes through. That’s wonderful!"
-        }
+        chosen = random.choice(templates.get(emotion, templates["neutral"]))
 
-        return f"{base.get(emotion, 'I hear you.')}\n\nFrom what you said: \"{message}\", it seems like this emotion is affecting you strongly. I'm here to support you step by step."
-
-    def generate_response(self, user_message, emotion, crisis_flag=False):
-        """
-        FINAL RESPONSE GENERATOR
-        Combines:
-        ✔ crisis detection
-        ✔ emotion detection
-        ✔ generative feeling response
-        ✔ supportive fallback lines
-        """
-
-        # Crisis mode
-        if crisis_flag:
-            return (
-                "⚠️ **IMPORTANT NOTICE**\n\n"
-                "It seems like you're going through a very intense or potentially harmful situation.\n"
-                "You deserve immediate support and someone to talk to right now.\n\n"
-                "**Please consider reaching out:**\n"
-                "- Someone you deeply trust\n"
-                "- A mental health professional\n"
-                "- A local helpline in your country\n\n"
-                "You are NOT alone. I'm here with you as well."
-            )
-
-        # Mix generative + supportive
-        supportive = random.choice(self.supportive_responses.get(emotion, ["I'm here with you."]))
-        ai_generated = self.generate_ai_style_response(user_message, emotion)
-
-        return f"{supportive}\n\n---\n\n{ai_generated}"
+        return (
+            f"{chosen}\n\n"
+            f"From what you said, I sensed emotions like: {', '.join(emotions)}.\n"
+            "Feel free to talk more about it."
+        )
