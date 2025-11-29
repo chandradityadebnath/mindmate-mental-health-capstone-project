@@ -2,7 +2,7 @@
 Crisis Detection Agent
 """
 
-from typing import Dict  # <-- Fixed import
+from typing import Dict
 
 class CrisisDetectionAgent:
     """Detects if the user message indicates a crisis"""
