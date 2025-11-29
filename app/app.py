@@ -10,15 +10,15 @@ import os
 nest_asyncio.apply()
 
 # =============================================
-# 🧠 GEMINI AI INTEGRATION WITH USER API KEY
+# 🧠 GEMINI AI INTEGRATION WITH SESSION STATE
 # =============================================
 
 class GeminiAIIntegration:
-    """Gemini AI Integration with user-provided API key"""
+    """Gemini AI Integration with session state management"""
     
     def __init__(self):
         self.model = None
-        self.fallback_mode = True  # Start in fallback mode
+        self.fallback_mode = True
         self.api_key = None
         
     def configure_ai(self, api_key: str):
@@ -31,32 +31,37 @@ class GeminiAIIntegration:
             
             # Try different models in priority order
             models_to_try = [
-                'gemini-2.0-flash-lite',
-                'gemini-2.0-flash-lite-001', 
-                'gemma-3-1b-it',
-                'gemini-2.0-flash',
-                'gemini-pro'
+                'models/gemini-2.0-flash-lite',
+                'models/gemini-2.0-flash-lite-001', 
+                'models/gemma-3-1b-it',
+                'models/gemini-2.0-flash',
+                'models/gemini-pro'
             ]
             
             for model_name in models_to_try:
                 try:
                     self.model = genai.GenerativeModel(model_name)
-                    # Test the model
+                    # Test the model with a simple prompt
                     test_response = self.model.generate_content("Say 'AI Ready'")
                     self.fallback_mode = False
                     self.api_key = api_key
-                    st.success(f"✅ Connected to {model_name}!")
+                    
+                    # Store in session state
+                    st.session_state.api_key_connected = True
+                    st.session_state.api_key = api_key
+                    st.session_state.ai_model = model_name
+                    
                     return True
                 except Exception as e:
                     continue
                     
             # If no models work
-            st.error("❌ No working Gemini models found with this API key")
+            st.session_state.api_key_connected = False
             self.fallback_mode = True
             return False
             
         except Exception as e:
-            st.error(f"❌ API configuration failed: {e}")
+            st.session_state.api_key_connected = False
             self.fallback_mode = True
             return False
     
@@ -153,25 +158,6 @@ That racing heart, difficulty breathing, and sense of losing control is your bod
 You're stronger than this feeling, even when it doesn't seem like it.""",
                 'ai_generated': False
             }
-        elif any(word in text_lower for word in ['sad', 'depressed', 'hopeless', 'empty', 'nothing matters']):
-            return {
-                'emotions': 'sad, depressed, hopeless',
-                'urgency': 'medium', 
-                'needs': 'emotional_support',
-                'response': """🤗 **I hear the heaviness you're carrying**
-
-That empty, nothing-matters feeling can be one of the most isolating experiences. Please know that what you're describing matters deeply, and I'm here with you in it.
-
-**What you're feeling is valid**, and it takes tremendous strength to articulate it. Depression often lies to us, making us believe this is how things will always be - but feelings, like weather, change and pass.
-
-**Small steps for right now:**
-- Be extra gentle with yourself today
-- If getting out of bed feels impossible, that's okay
-- Could you try one tiny comforting action? Maybe a sip of water or looking out a window
-
-You're not alone in this, even when it feels that way.""",
-                'ai_generated': False
-            }
         else:
             return {
                 'emotions': 'reflective, contemplative',
@@ -192,7 +178,7 @@ Sometimes just speaking our truth aloud can help lighten the load, even if just 
 # =============================================
 
 class MentalHealthAgent:
-    """Mental Health Agent with configurable AI"""
+    """Mental Health Agent with session state management"""
     
     def __init__(self):
         self.ai = GeminiAIIntegration()
@@ -202,6 +188,14 @@ class MentalHealthAgent:
             'panic': ['panic attack', 'cant breathe', 'heart racing', 'losing control'],
             'depression': ['hopeless', 'empty inside', 'no point', 'cant get out of bed']
         }
+        
+        # Initialize session state if not exists
+        if 'api_key_connected' not in st.session_state:
+            st.session_state.api_key_connected = False
+        if 'api_key' not in st.session_state:
+            st.session_state.api_key = None
+        if 'ai_model' not in st.session_state:
+            st.session_state.ai_model = None
         
         self.resources = {
             "crisis": {
@@ -219,6 +213,17 @@ class MentalHealthAgent:
     def configure_ai(self, api_key: str) -> bool:
         """Configure the AI with user API key"""
         return self.ai.configure_ai(api_key)
+    
+    def is_ai_connected(self) -> bool:
+        """Check if AI is connected"""
+        return st.session_state.api_key_connected
+    
+    def get_ai_status(self) -> str:
+        """Get AI connection status"""
+        if st.session_state.api_key_connected:
+            return f"✅ Connected to {st.session_state.ai_model}"
+        else:
+            return "❌ Not Connected"
     
     async def chat(self, message: str, user_id: str = "anonymous") -> dict:
         """Main chat method"""
@@ -308,7 +313,7 @@ Your safety is the absolute priority. Please reach out now."""
             return self.resources
 
 # =============================================
-# 🎨 STREAMLIT APP WITH API KEY INPUT
+# 🎨 STREAMLIT APP WITH FIXED SESSION STATE
 # =============================================
 
 # Initialize the agent
@@ -357,14 +362,22 @@ st.markdown("""
         color: #ffa500;
         border: 2px solid #ffa500;
     }
+    .connected-badge {
+        background-color: #00cc96;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # Header
 st.markdown('<div class="main-header">🧠 MindMate AI</div>', unsafe_allow_html=True)
 
-# API Key Section (like Kaggle)
-with st.expander("🔑 Connect Your Google AI API Key", expanded=True):
+# API Key Section
+with st.expander("🔑 Connect Your Google AI API Key", expanded=not st.session_state.api_key_connected):
     st.markdown("""
     **Get your FREE API key:**
     1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
@@ -375,53 +388,70 @@ with st.expander("🔑 Connect Your Google AI API Key", expanded=True):
     col1, col2 = st.columns([3, 1])
     
     with col1:
+        # Use session state to remember the API key input
+        if 'api_key_input' not in st.session_state:
+            st.session_state.api_key_input = ""
+            
         api_key = st.text_input(
             "Google AI API Key:",
+            value=st.session_state.api_key_input,
             type="password",
             placeholder="Enter your API key here...",
-            help="Get free API key from https://makersuite.google.com/app/apikey"
+            help="Get free API key from https://makersuite.google.com/app/apikey",
+            key="api_key_input_widget"
         )
     
     with col2:
         st.write("")  # Spacing
         st.write("")  # Spacing
-        if st.button("🔗 Connect AI", use_container_width=True):
-            if api_key:
-                with st.spinner("Connecting to Gemini AI..."):
-                    success = mental_health_agent.configure_ai(api_key)
-                    if success:
-                        st.success("✅ AI Connected Successfully!")
-                        st.rerun()
-                    else:
-                        st.error("❌ Failed to connect. Check your API key.")
-            else:
-                st.warning("⚠️ Please enter an API key")
+        connect_button = st.button("🔗 Connect AI", use_container_width=True, type="primary")
+        
+        # Disconnect button if connected
+        if st.session_state.api_key_connected:
+            if st.button("🔓 Disconnect", use_container_width=True, type="secondary"):
+                st.session_state.api_key_connected = False
+                st.session_state.api_key = None
+                st.session_state.api_key_input = ""
+                st.session_state.ai_model = None
+                st.rerun()
+    
+    if connect_button:
+        if api_key:
+            with st.spinner("Connecting to Gemini AI..."):
+                success = mental_health_agent.configure_ai(api_key)
+                if success:
+                    st.session_state.api_key_input = api_key
+                    st.success("✅ AI Connected Successfully!")
+                    st.rerun()
+                else:
+                    st.error("❌ Failed to connect. Check your API key.")
+        else:
+            st.warning("⚠️ Please enter an API key")
 
-# AI Status Display
-if mental_health_agent.ai.model and not mental_health_agent.ai.fallback_mode:
+# AI Status Display - FIXED: Now uses session state
+if st.session_state.api_key_connected:
     st.markdown('<div class="ai-status ai-active">🤖 REAL GEMINI AI ACTIVE</div>', unsafe_allow_html=True)
+    st.success(f"✅ Connected to: {st.session_state.ai_model}")
 else:
     st.markdown('<div class="ai-status ai-simulated">🔄 ADVANCED SIMULATED AI ACTIVE</div>', unsafe_allow_html=True)
+    st.info("💡 Connect your API key above for real AI responses")
 
 # Sidebar
 with st.sidebar:
     st.header("🤖 AI System Status")
     
-    if mental_health_agent.ai.model and not mental_health_agent.ai.fallback_mode:
-        st.success("""
-        **✅ Real Gemini AI Active**
-        
-        Your messages are being analyzed by Google's advanced AI models.
-        """)
+    if st.session_state.api_key_connected:
+        st.success("**✅ Real Gemini AI Active**")
         st.metric("AI Mode", "Real AI")
+        st.metric("Model", st.session_state.ai_model)
         st.metric("API Status", "Connected")
-    else:
-        st.warning("""
-        **🔄 Advanced Simulated AI**
         
-        Using sophisticated mental health algorithms.
-        Connect your API key for real AI.
-        """)
+        # Show masked API key
+        if st.session_state.api_key:
+            masked_key = st.session_state.api_key[:8] + "..." + st.session_state.api_key[-4:]
+            st.code(f"API: {masked_key}")
+    else:
+        st.warning("**🔄 Advanced Simulated AI**")
         st.metric("AI Mode", "Simulated")
         st.metric("API Status", "Not Connected")
     
@@ -433,14 +463,18 @@ with st.sidebar:
     - 🚑 **Call 911** for emergencies
     """)
     
-    st.header("💡 How to Get API Key")
-    st.info("""
-    1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-    2. Sign in with Google account
-    3. Click "Create API Key"
-    4. Copy and paste above
-    5. It's **FREE** for limited use
-    """)
+    st.header("💡 Quick Examples")
+    example_messages = [
+        "I've been feeling really sad lately",
+        "I'm having a panic attack right now",
+        "I feel completely alone",
+        "I'm stressed about everything"
+    ]
+    
+    for example in example_messages:
+        if st.button(example, use_container_width=True):
+            # This would need to be handled in the main chat logic
+            st.info("Type this message in the chat below")
 
 # Main chat interface
 col1, col2 = st.columns([2, 1])
@@ -448,7 +482,7 @@ col1, col2 = st.columns([2, 1])
 with col1:
     st.subheader("💬 Chat with MindMate")
     
-    # Initialize session state
+    # Initialize session state for messages
     if 'messages' not in st.session_state:
         st.session_state.messages = []
     
@@ -529,12 +563,24 @@ with col2:
         st.metric("AI Responses", ai_count)
         st.metric("Simulated Responses", sim_count)
     
-    st.subheader("🔧 API Info")
-    if mental_health_agent.ai.api_key:
-        st.success("API Key: ✅ Connected")
-        st.code(f"Key: {mental_health_agent.ai.api_key[:8]}...")
+    st.subheader("🔧 API Status")
+    
+    # FIXED: Now properly shows connection status
+    if st.session_state.api_key_connected:
+        st.success("**✅ API Key: CONNECTED**")
+        if st.session_state.ai_model:
+            st.metric("AI Model", st.session_state.ai_model)
+        
+        # Disconnect button
+        if st.button("🔓 Disconnect API", use_container_width=True, type="secondary"):
+            st.session_state.api_key_connected = False
+            st.session_state.api_key = None
+            st.session_state.api_key_input = ""
+            st.session_state.ai_model = None
+            st.rerun()
     else:
-        st.warning("API Key: ❌ Not Connected")
+        st.warning("**❌ API Key: NOT CONNECTED**")
+        st.info("Connect your API key above")
     
     # Clear chat button
     if st.button("🗑️ Clear Chat History", use_container_width=True):
