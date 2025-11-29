@@ -1,4 +1,3 @@
-from .main import MentalHealthAgent
-from .ai_orchestrator import MentalHealthOrchestrator
+from .main import mental_health_agent, MentalHealthAgent
 
-__all__ = ['MentalHealthAgent', 'MentalHealthOrchestrator']
+__all__ = ['mental_health_agent', 'MentalHealthAgent']
