@@ -103,22 +103,37 @@ python basic_usage.py
 
 ## 📁 Repository Structure  
 ```
-mental-health-agent-capstone-project/
-├── docs/                     # Documentation files (e.g., architecture.md)
-├── examples/                 # Usage examples (e.g., basic_usage.py)
-├── images/                   # Assets like architecture diagrams
-├── src/                      # Source Code Directory
-│   └── mental_health_bot/    # <---  MAIN PYTHON PACKAGE (The "internal folder")
-│       ├── (agents/)         # (Folder likely created but not visible in list)
-│       └── emotion_analyzer.py 
-├── tests/                    # Test suite directory
-├── workflows/                # GitHub Actions/CI/CD files (renamed from .github/workflows)
-├── .gitignore
-├── LICENSE
-├── README.md
-├── notebook.ipynb            # Jupyter notebook for experiments
-├── requirements.txt
-└── setup.py                  # Setup file for distribution
+/mindmate-mental-health-capstone-project
+|
+|-- README.md                   <-- (CRITICAL) The main entry point. Your project summary, setup guide, and links.
+|-- LICENSE                     <-- (REQUIRED) Specifies how others can use your code (e.g., MIT License).
+|-- requirements.txt            <-- (CRITICAL) List of all Python dependencies for easy replication.
+|-- .gitignore                  <-- (CRITICAL) Ignores environment files, secrets, and local checkpoints.
+|
+|-- /notebooks
+|   |-- mindmate_capstone_project.ipynb <-- Your core Kaggle Notebook (Renamed for professional consistency).
+|   |-- 01_data_prep.ipynb      <-- (Optional) If you have a separate file for data cleaning/preparation.
+|
+|-- /src                        <-- Source Code (for agents, tools, and main execution)
+|   |-- __init__.py             <-- Makes 'src' a Python module.
+|   |-- agents                  <-- Folder for individual agent classes
+|   |   |-- emotional_agent.py
+|   |   |-- crisis_agent.py
+|   |   |-- orchestrator.py
+|   |   |-- tools.py            <-- Contains custom functions the agents can use (e.g., memory, search).
+|   |-- main.py                 <-- (Optional) A clean script to run the final Streamlit app logic.
+|
+|-- /data
+|   |-- sample_data.csv         <-- A small, anonymized sample of the data used for training/testing (if applicable and non-sensitive).
+|   |-- metrics_report.json     <-- (Optional) Output file for final performance metrics.
+|
+|-- /docs
+|   |-- architecture_diagram.png <-- The image of your "Layered Support System" you requested earlier.
+|   |-- system_design.md         <-- (Optional) Detailed write-up on agent architecture and memory system.
+|
+|-- /streamlit_app
+|   |-- Home.py                 <-- The main Streamlit app file.
+|   |-- pages/                  <-- Streamlit pages (e.g., a "Metrics" or "About" page).
 ```
 
 ---
