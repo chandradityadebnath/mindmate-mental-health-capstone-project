@@ -1,7 +1,10 @@
 
 # 🌿 MindMate - Mental Health Agent System — Capstone Project 
 
-A creative, smart, and extensible system designed to offer personalized mental‑health assistance using modern AI techniques.
+"Because everyone deserves a listening ear 🤗 and support system"
+A multi-agent AI project built by Chandraditya Debnath, Aditya Kukade, Chaitanya Mutte, and Mithesh Makam.
+
+A creative, smart, and extensible system designed to offer personalized mental‑health assistance using modern AI techniques 
 
 ## 🚀 Live Demo
 
@@ -11,7 +14,7 @@ Experience the live Mental Health Agent System:
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mindmate-mental-health-capstone-project-mqyasujqfqzkq9p9wgmnwd.streamlit.app/)
 
-### 🎯 Try It Now!
+###  Try It Now!
 - **Real-time AI-powered mental health support**
 - **Multi-agent system with 4 specialized agents**
 - **Crisis detection and emergency protocols**
@@ -19,7 +22,7 @@ Experience the live Mental Health Agent System:
 
 ---
 
-## 🧠 Problem Statement  
+##  Problem Statement  :
 Mental health support is often hard to access due to  
 - Limited availability of professionals  
 - High cost barriers  
@@ -30,7 +33,7 @@ This project solves the above by building an **AI‑powered conversational agent
 
 ---
 
-## 🚀 Solution Overview  
+## Solution Overview  
 The system uses:  
 - **Natural Language Processing (NLP)** to understand user inputs  
 - **Emotion classification models** to detect tone and mood  
@@ -44,7 +47,7 @@ It is modular, scalable, and built to be deployable as:
 
 ---
 
-## 🏗️ System Architecture  
+## System Architecture  
 
 ![Architecture](images/architecture_diagram[1].png)
 
