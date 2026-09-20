@@ -1,9 +1,9 @@
 
 # 🌿 MindMate - Mental Health Agent System — Capstone Project 
 
-"Because everyone deserves a listening ear 🤗 and support system"
+"𝘉𝘦𝘤𝘢𝘶𝘴𝘦 𝘦𝘷𝘦𝘳𝘺𝘰𝘯𝘦 𝘥𝘦𝘴𝘦𝘳𝘷𝘦𝘴 𝘢 𝘭𝘪𝘴𝘵𝘦𝘯𝘪𝘯𝘨 𝘦𝘢𝘳 🤗 𝘢𝘯𝘥 𝘴𝘶𝘱𝘱𝘰𝘳𝘵 𝘴𝘺𝘴𝘵𝘦𝘮"
 
-## A multi-agent AI project built by Chandraditya Debnath, Aditya Kukade, Chaitanya Mutte, and Mithesh Makam.
+**A multi-agent AI project built by Chandraditya Debnath, Aditya Kukade, Chaitanya Mutte, and Mithesh Makam.**
 
 A creative, smart, and extensible system designed to offer personalized mental‑health assistance using modern AI techniques 
 
