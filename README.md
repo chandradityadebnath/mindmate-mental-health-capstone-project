@@ -3,7 +3,7 @@
 
 "Because everyone deserves a listening ear 🤗 and support system"
 
-A multi-agent AI project built by Chandraditya Debnath, Aditya Kukade, Chaitanya Mutte, and Mithesh Makam.
+## A multi-agent AI project built by Chandraditya Debnath, Aditya Kukade, Chaitanya Mutte, and Mithesh Makam.
 
 A creative, smart, and extensible system designed to offer personalized mental‑health assistance using modern AI techniques 
 
